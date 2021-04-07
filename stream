@@ -1,0 +1,45 @@
+#!/bin/bash
+# Written by skiqqy
+# Usage: stream -h
+#echo 'cycle pause' | socat - /tmp/mpvsoc # This will be used in a seperate script to control mpv
+
+args=( $@ ) # I want splitting
+
+usage ()
+{
+	cat << EOF
+Stream ~ The simple stream utility
+
+Usage: stream [options] [url]
+
+Written by skiqqy
+EOF
+	exit "$1"
+}
+
+# Play a stream
+# Usage play "$url"
+play ()
+{
+	mpv --ytdl-raw-options=force-ipv4= "$1" --no-video --input-ipc-server=/tmp/mpvsoc
+}
+
+main ()
+{
+	opts="h"
+	while getopts "$opts" opt
+	do
+		case "$opt" in
+			h)
+				usage 0
+				;;
+			*)
+				usage 1
+				;;
+		esac
+	done
+
+	play https://www.youtube.com/watch?v=5qap5aO4i9A # Just for now.
+}
+
+main "$@"
