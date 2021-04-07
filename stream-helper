@@ -5,7 +5,7 @@
 
 socket=/tmp/mpvsoc
 deps=( jq dmenu ) # List of dependencies needed by stream-helper
-commands=( pp vol ) # Available commands in tui/gui mode. DO NOT CHANGE.
+commands=( pp vol ) # Available commands in tui/gui mode. DO NOT CHANGE, names cannot have spaces.
 
 usage ()
 {
@@ -95,6 +95,13 @@ debug ()
 	pp 2 # Sleep for 2 seconds
 }
 
+# Gui eventloop that does gui things using dmenu
+gui ()
+{
+	coms="${commands[*]}"
+	echo -e "${coms// /\\n}" | dmenu -l ${#commands[*]} -p 'Enter Command:'
+}
+
 main ()
 {
 	opts="hs:d"
@@ -117,7 +124,7 @@ main ()
 		esac
 	done
 
-	debug # Just for testing
+	gui
 }
 
 main "$@"
