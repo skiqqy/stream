@@ -3,7 +3,10 @@
 # Usage: stream -h
 
 args=( $@ ) # I want splitting
+deps=( youtube-dl mpv ) # List of dependencies needed by stream
 version=alpha-1.0v
+socket=/tmp/mpvsoc
+v=--no-video
 
 usage ()
 {
@@ -26,17 +29,28 @@ EOF
 # Usage play "$url"
 play ()
 {
-	mpv --ytdl-raw-options=force-ipv4= "$1" --no-video --input-ipc-server=/tmp/mpvsoc
+	mpv --ytdl-raw-options=force-ipv4= "$1" "$v" --input-ipc-server="$socket"
 }
 
 main ()
 {
-	opts="h"
+	opts="hs:dv"
 	while getopts "$opts" opt
 	do
 		case "$opt" in
 			h)
 				usage 0
+				;;
+			s)
+				socket="$OPTARG"
+				;;
+			d)
+				echo "Dependencies: ${deps[*]}"
+				exit 0
+				;;
+			v)
+				echo "Enabling video"
+				v=
 				;;
 			*)
 				usage 1

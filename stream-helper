@@ -4,7 +4,7 @@
 # Purpose: Uses dmenu to ineract and control a stream instance.
 
 socket=/tmp/mpvsoc
-deps=( jq dmenu socat ) # List of dependencies needed by stream-helper
+deps=( jq dmenu socat ss ) # List of dependencies needed by stream-helper
 commands=( pp svol ) # Available commands in tui/gui mode. DO NOT CHANGE, names cannot have spaces.
 version=alpha-1.0v
 
@@ -202,6 +202,12 @@ main ()
 				;;
 		esac
 	done
+
+	if ! ss -l | grep "$socket" > /dev/null
+	then
+		echo "Socket '$socket' not found! Exiting."
+		exit 1
+	fi
 
 	if "$tty"
 	then
