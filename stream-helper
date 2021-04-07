@@ -29,7 +29,7 @@ EOF
 	exit "$1"
 }
 
-commands_help ()
+help ()
 {
 	for c in ${commands[*]}
 	do
@@ -122,18 +122,19 @@ debug ()
 	pp 2 # Sleep for 2 seconds
 }
 
-# Gui eventloop that does gui things using dmenu
-gui ()
+# Run a command, acts as a little safety net to prevent nasty stuff
+# Usage: run "command <command flags>"
+run ()
 {
-	coms="${commands[*]}"
-	input=$(echo -e "${coms// /\\n}" | dmenu -l ${#commands[*]} -p 'Enter Command:') # Get input
-
-	case "$input" in
+	case "$1" in
 		pp*) # User can type pp "flags" directly
-			$input # I want splitting
+			$1 # I want splitting
 			;;
 		svol*)
-			$input # I want splitting
+			$1 # I want splitting
+			;;
+		help)
+			help
 			;;
 		*)
 			echo "Invalid command"
@@ -142,9 +143,24 @@ gui ()
 	esac
 }
 
+# Gui eventloop that does gui things using dmenu
+gui ()
+{
+	coms="${commands[*]}"
+	input=$(echo -e "${coms// /\\n}" | dmenu -l ${#commands[*]} -p 'Enter Command:') # Get input
+
+	run "$input"
+}
+
+# Basically just a subshell of this shell lol
 tty ()
 {
-	echo TODO tty mode
+	if read -p ">>> " input
+	then
+		run "$input"
+	else
+		return 1
+	fi
 }
 
 main ()
@@ -170,7 +186,7 @@ main ()
 				tty=true
 				;;
 			c)
-				commands_help
+				help
 				exit 0
 				;;
 			*)
@@ -181,7 +197,14 @@ main ()
 
 	if "$tty"
 	then
-		tty
+		echo -e "stream-helper $version\nType \"help\" for help"
+		for ((;;))
+		do
+			if ! tty
+			then
+				break
+			fi
+		done
 	else
 		gui
 	fi
