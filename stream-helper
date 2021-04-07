@@ -127,10 +127,7 @@ debug ()
 run ()
 {
 	case "$1" in
-		pp*) # User can type pp "flags" directly
-			$1 # I want splitting
-			;;
-		svol*)
+		pp*|svol*) # User can type pp "flags" directly
 			$1 # I want splitting
 			;;
 		help)
