@@ -1,7 +1,6 @@
 #!/bin/bash
 # Written by skiqqy
 # Usage: stream -h
-#echo 'cycle pause' | socat - /tmp/mpvsoc # This will be used in a seperate script to control mpv
 
 args=( $@ ) # I want splitting
 

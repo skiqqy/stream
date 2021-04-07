@@ -63,8 +63,20 @@ svol ()
 		return 1
 	fi
 
-	echo '{ "command": ["set_property", "volume", '"$vol"'] }' | socat - "$socket"
+	echo '{ "command": ["set_property", "volume", '"$vol"'] }' | socat - "$socket" > /dev/null
 	echo "[VOLUME] $ovol changed to $vol"
+}
+
+# Pause/Play the current stream instance (for an optional time)
+# Usage: pp [time]
+pp ()
+{
+	echo 'cycle pause' | socat - "$socket"
+	if [[ "$1" =~ ^[0-9]+$ ]]
+	then
+		sleep "$1"
+		echo 'cycle pause' | socat - "$socket"
+	fi
 }
 
 main ()
@@ -85,11 +97,15 @@ main ()
 		esac
 	done
 
-	#svol i 10
-	#svol d
+	# This is just for testing
 	svol + 10
 	svol - 10
 	svol - - 50
+	pp # Testing hard pause, no time given
+	sleep 1 # Stream should pause for 1 second
+	pp
+	sleep 3 # Play for 3 second
+	pp 2 # Sleep for 2 seconds
 }
 
 main "$@"
