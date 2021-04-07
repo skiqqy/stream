@@ -1,7 +1,7 @@
 # Stream
 
 Stream is a simple toolkit I use to make watching/ listening to streams/ videos
-from the CLI easier.
+(via a url or file on disk or a live-stream) from the CLI easier.
 
 ## Usage
 
