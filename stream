@@ -4,9 +4,10 @@
 
 args=( $@ ) # I want splitting
 deps=( youtube-dl mpv ) # List of dependencies needed by stream
-version=alpha-1.0v
+version=beta-1.0v
 socket=/tmp/mpvsoc
 v=--no-video
+url='https://www.youtube.com/watch?v=5qap5aO4i9A' # By default we play lofi
 
 usage ()
 {
@@ -35,6 +36,39 @@ play ()
 main ()
 {
 	opts="hs:dv"
+
+	# Set url if needed, to do this we must parse the arguments to ensure we dont eat up an OPTARG
+	if [ "$#" -eq 1 ]
+	then
+		arg="${args[0]}"
+		if  [ ! "${arg::1}" = - ]
+		then
+			url="$arg"
+		fi
+	elif [ "$#" -ge 2 ]
+	then
+		# Check last two arguments to ensure last arg is not an OPTARG
+		argl="${args[$(($# - 1))]}"
+		argsl="${args[$(($# - 2))]}"
+		if  [ ! "${argl::1}" = - ]
+		then
+			if  [ ! "${argsl::1}" = - ] # Always take the very last argument as the url.
+			then
+				url="$argl"
+			else
+				# Check that second last arg is not a flag that takes an argument.
+				argsl=${argsl:1:2}
+				type=$(echo "$opts" | grep -Eo "$argsl.")
+				type=${type:1:2}
+				if [ ! "$type" = ":" ]
+				then
+					# Last arg is not an opt arg, hurray!
+					url="$argl"
+				fi
+			fi
+		fi
+	fi
+
 	while getopts "$opts" opt
 	do
 		case "$opt" in
@@ -59,7 +93,7 @@ main ()
 	done
 
 	echo "Stream instance ID: $$"
-	play https://www.youtube.com/watch?v=5qap5aO4i9A # Just for now.
+	play "$url" # Just for now.
 }
 
 main "$@"

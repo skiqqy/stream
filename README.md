@@ -3,12 +3,26 @@
 Stream is a simple toolkit I use to make watching/ listening to streams/ videos
 from the CLI easier.
 
-## Stream-Helper
+## Usage
 
-Simple tool that makes working with a stream instance easier. Roughly speaking
-the commands entered are run as is in the shell (including flags). So as of right
-now (since I havent written proper documentation yet) the best method to see how
-to use each command to its full potentiol is to do the following:
+To listen to/Play videos look at `stream -h`.
+To manipulate `stream` whilst its running look at `stream-helper- h`.
+
+## Stream-Helper Continued
+
+Stream-Helper's main goal is to make working with `stream` easier (in any
+possible way). One of the nice features of `stream-helper` is the fact that you
+can pipe commands to it, and it will perform them. For example if we want to
+pause its stream instance we can simply do the following.
+```
+echo pp | stream-helper -t
+```
+We can then repeat the above to unpause. Piping the commands works for all
+commands (see `echo help | stream-helper -t`)
+
+This allows for Stream-Helper to be used/plugged in anywhere in a unix like
+fashion of simply piping input into a program (eg binding a dwm key to run
+`echo pp | stream-helper -t` to pause currently playing stream).
 
 ## Stream-Helper: Command Help
 

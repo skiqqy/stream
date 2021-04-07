@@ -1,12 +1,12 @@
 #!/bin/bash
 # Written by skiqqy
-# Usage: stream -h
+# Usage: stream-helper -h
 # Purpose: Uses dmenu to ineract and control a stream instance.
 
 socket=/tmp/mpvsoc
 deps=( jq dmenu socat ss ) # List of dependencies needed by stream-helper
 commands=( pp svol ) # Available commands in tui/gui mode. DO NOT CHANGE, names cannot have spaces.
-version=alpha-1.0v
+version=beta-1.0v
 
 usage ()
 {
