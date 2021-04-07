@@ -135,7 +135,7 @@ run ()
 			;;
 		*)
 			echo "Invalid command"
-			return 1
+			return 2
 			;;
 	esac
 }
@@ -197,7 +197,8 @@ main ()
 		echo -e "stream-helper $version\nType \"help\" for help"
 		for ((;;))
 		do
-			if ! tty
+			tty
+			if [ "$?" -eq 1 ] # 1 means exit
 			then
 				break
 			fi
