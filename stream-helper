@@ -5,7 +5,7 @@
 
 socket=/tmp/mpvsoc
 deps=( jq dmenu socat ) # List of dependencies needed by stream-helper
-commands=( pp vol ) # Available commands in tui/gui mode. DO NOT CHANGE, names cannot have spaces.
+commands=( pp svol ) # Available commands in tui/gui mode. DO NOT CHANGE, names cannot have spaces.
 version=alpha-1.0v
 
 usage ()
@@ -53,9 +53,14 @@ getvol () {
 }
 
 # Control/Set the volume by an (optional) amount, or by 2 if none given.
-# Usage: contvol [(i|d) [amount]] [set to]
+# Usage: svol [(i|d) [amount]] [set to]
 svol ()
 {
+	if [ "$#" -eq 0 ]
+	then
+		vol=50 # No commands -> set volume to 50%
+	fi
+
 	case "$1" in
 		+)
 			opp=+
@@ -64,7 +69,7 @@ svol ()
 			opp=-
 			;;
 		*)
-			if [ -z "$3" ]
+			if [ -z "$3" ] && [ ! "$#" -eq 0 ]
 			then
 				echo "Empty first argument requires non empty third arg."
 				return 1 # Check valid first argument
@@ -74,10 +79,11 @@ svol ()
 	[ -z "$2" ] && inc=2 || inc="$2"
 
 	ovol=$(getvol)
-	if [ -z "$3" ]
+	if [ -z "$3" ] && [ ! "$#" -eq 0 ]
 	then
 		vol=$(("$ovol" "$opp" "$inc")) # Calculate the volume change.
-	else
+	elif [ -n "$3" ]
+	then
 		vol="$3"
 	fi
 
@@ -123,8 +129,11 @@ gui ()
 	input=$(echo -e "${coms// /\\n}" | dmenu -l ${#commands[*]} -p 'Enter Command:') # Get input
 
 	case "$input" in
-		pp)
-			pp
+		pp*) # User can type pp "flags" directly
+			$input # I want splitting
+			;;
+		svol*)
+			$input # I want splitting
 			;;
 		*)
 			echo "Invalid command"
