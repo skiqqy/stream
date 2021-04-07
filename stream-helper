@@ -4,6 +4,8 @@
 # Purpose: Uses dmenu to ineract and control a stream instance.
 
 socket=/tmp/mpvsoc
+deps=( jq dmenu ) # List of dependencies needed by stream-helper
+commands=( pp vol ) # Available commands in tui/gui mode. DO NOT CHANGE.
 
 usage ()
 {
@@ -17,6 +19,7 @@ options
 
 -h    Shows this message.
 -s    Specify the socket to use.
+-d    See the dependencies needed for full functionality.
 
 Written by skiqqy
 EOF
@@ -79,9 +82,22 @@ pp ()
 	fi
 }
 
+# This is just for testing
+debug ()
+{
+	svol + 10
+	svol - 10
+	svol - - 50
+	pp # Testing hard pause, no time given
+	sleep 1 # Stream should pause for 1 second
+	pp
+	sleep 3 # Play for 3 second
+	pp 2 # Sleep for 2 seconds
+}
+
 main ()
 {
-	opts="hs:"
+	opts="hs:d"
 	while getopts "$opts" opt
 	do
 		case "$opt" in
@@ -91,21 +107,17 @@ main ()
 			s)
 				socket="$OPTARG"
 				;;
+			d)
+				echo "Dependencies: ${deps[*]}"
+				exit 0
+				;;
 			*)
 				usage 1
 				;;
 		esac
 	done
 
-	# This is just for testing
-	svol + 10
-	svol - 10
-	svol - - 50
-	pp # Testing hard pause, no time given
-	sleep 1 # Stream should pause for 1 second
-	pp
-	sleep 3 # Play for 3 second
-	pp 2 # Sleep for 2 seconds
+	debug # Just for testing
 }
 
 main "$@"
