@@ -1,0 +1,95 @@
+#!/bin/bash
+# Written by skiqqy
+# Usage: stream -h
+# Purpose: Uses dmenu to ineract and control a stream instance.
+
+socket=/tmp/mpvsoc
+
+usage ()
+{
+	cat << EOF
+Stream-Helper ~ The simple stream helper utility
+
+Usage: stream-helper [options] [pid]
+
+options
+-------
+
+-h    Shows this message.
+-s    Specify the socket to use.
+
+Written by skiqqy
+EOF
+	exit "$1"
+}
+
+# Prints the volume of stream instance
+getvol () {
+	echo '{ "command": ["get_property", "volume"] }' | socat - "$socket" | jq .data
+}
+
+# Control/Set the volume by an (optional) amount, or by 2 if none given.
+# Usage: contvol [(i|d) [amount]] [set to]
+svol ()
+{
+	case "$1" in
+		+)
+			opp=+
+			;;
+		-)
+			opp=-
+			;;
+		*)
+			if [ -z "$3" ]
+			then
+				echo "Empty first argument requires non empty third arg."
+				return 1 # Check valid first argument
+			fi
+			;;
+	esac
+	[ -z "$2" ] && inc=2 || inc="$2"
+
+	ovol=$(getvol)
+	if [ -z "$3" ]
+	then
+		vol=$(("$ovol" "$opp" "$inc")) # Calculate the volume change.
+	else
+		vol="$3"
+	fi
+
+	if [[ "$vol" -gt 100 ]] || [[ $vol -lt 0 ]]
+	then
+		echo "$vol is an invalid volume value"
+		return 1
+	fi
+
+	echo '{ "command": ["set_property", "volume", '"$vol"'] }' | socat - "$socket"
+	echo "[VOLUME] $ovol changed to $vol"
+}
+
+main ()
+{
+	opts="hs:"
+	while getopts "$opts" opt
+	do
+		case "$opt" in
+			h)
+				usage 0
+				;;
+			s)
+				socket="$OPTARG"
+				;;
+			*)
+				usage 1
+				;;
+		esac
+	done
+
+	#svol i 10
+	#svol d
+	svol + 10
+	svol - 10
+	svol - - 50
+}
+
+main "$@"

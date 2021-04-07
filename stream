@@ -12,6 +12,11 @@ Stream ~ The simple stream utility
 
 Usage: stream [options] [url]
 
+options
+-------
+
+-h    Shows this message.
+
 Written by skiqqy
 EOF
 	exit "$1"
@@ -39,6 +44,7 @@ main ()
 		esac
 	done
 
+	echo "Stream instance ID: $$"
 	play https://www.youtube.com/watch?v=5qap5aO4i9A # Just for now.
 }
 
