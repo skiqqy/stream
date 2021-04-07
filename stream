@@ -3,11 +3,12 @@
 # Usage: stream -h
 
 args=( $@ ) # I want splitting
+version=alpha-1.0v
 
 usage ()
 {
 	cat << EOF
-Stream ~ The simple stream utility
+Stream $version ~ The simple stream utility
 
 Usage: stream [options] [url]
 
