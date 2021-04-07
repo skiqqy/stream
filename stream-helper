@@ -29,22 +29,36 @@ EOF
 	exit "$1"
 }
 
+# Prints information on commands.
+# Usage help [command]
+# If no command is given, print all commands.
 help ()
 {
+	if [ -n "$1" ]
+	then
+		print_command "$1"
+		return
+	fi
+
 	for c in ${commands[*]}
 	do
-		case "$c" in
+		print_command "$c"
+	done
+}
+
+print_command ()
+{
+		case "$1" in
 			pp)
-				echo "$c: Pause/Play current stream instance."
+				echo -e "$1"': Pause/Play current stream instance.\n\t- Usage: pp [time]'
 				;;
-			vol)
-				echo "$c: Adjust stream instance volume."
+			svol)
+				echo -e "$1"': Adjust stream instance volume.\n\t- Usage: svol [(i|d) [amount]] [set to]'
 				;;
 			*)
-				echo "$c: Description $c not yet implemented."
+				echo -e "$1": Description $1 not yet implemented.
 				;;
 		esac
-	done
 }
 
 # Prints the volume of stream instance
@@ -127,15 +141,12 @@ debug ()
 run ()
 {
 	case "$1" in
-		pp*|svol*) # User can type pp "flags" directly
+		pp*|svol*|help*) # User can type pp "flags" directly
 			$1 # I want splitting
-			;;
-		help)
-			help
 			;;
 		*)
 			echo "Invalid command"
-			return 2
+			return 1
 			;;
 	esac
 }
@@ -152,11 +163,11 @@ gui ()
 # Basically just a subshell of this shell lol
 tty ()
 {
-	if read -p ">>> " input
+	if read -rp ">>> " input
 	then
 		run "$input"
 	else
-		return 1
+		return 2
 	fi
 }
 
@@ -183,7 +194,7 @@ main ()
 				tty=true
 				;;
 			c)
-				help
+				help # I dont pass commands on purpose
 				exit 0
 				;;
 			*)
@@ -194,11 +205,11 @@ main ()
 
 	if "$tty"
 	then
-		echo -e "stream-helper $version\nType \"help\" for help"
+		echo -e "stream-helper $version\nType \"help\" or \"help <command>\" for help"
 		for ((;;))
 		do
 			tty
-			if [ "$?" -eq 1 ] # 1 means exit
+			if [ "$?" -eq 2 ] # 2 means exit
 			then
 				break
 			fi

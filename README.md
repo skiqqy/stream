@@ -10,11 +10,17 @@ the commands entered are run as is in the shell (including flags). So as of righ
 now (since I havent written proper documentation yet) the best method to see how
 to use each command to its full potentiol is to do the following:
 
-## First get the list of commands
-You can either run `stream-helper -c` or `grep commands=`, both will show the
-commands.
+## Stream-Helper: Command Help
 
-Once you have the list of commands, run something like whats below on each command
+The primary method is to run `stream-helper -t` to enter tty mode and type `help` or
+`help <command>` to get information on the command(s). This also works in gui mode,
+but simply prints to stdout, hence tty mode is suggested.
+
+You can also run `stream-helper -c` or `grep commands=`, both will show the
+commands available, the former prints usage as well.
+
+Once you have the list of commands, you can run something like whats below on
+each command
 ```
 grep -n ": <command>" stream-helper
 ```
