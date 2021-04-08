@@ -2,11 +2,14 @@
 # Written by skiqqy
 # Usage: stream -h
 
+# When talking about 'folders' in the script I am refering to simple files that
+# hold links/paths to vdeos, be it on disk or on the internet, see the README
+
 args=( $@ ) # I want splitting
-deps=( youtube-dl mpv ) # List of dependencies needed by stream
+deps=( youtube-dl mpv dmenu ) # List of dependencies needed by stream
 version=beta-1.0v
 socket=/tmp/mpvsoc
-v=--no-video
+v=
 url='https://www.youtube.com/watch?v=5qap5aO4i9A' # By default we play lofi
 
 usage ()
@@ -20,6 +23,10 @@ options
 -------
 
 -h    Shows this message.
+-s    Specify the socket to use.
+-d    See the dependencies needed for full functionality.
+-v    Disable Video (only play audio).
+-f    Load and use the folders to select a video from dmenu.
 
 Written by skiqqy
 EOF
@@ -30,12 +37,44 @@ EOF
 # Usage play "$url"
 play ()
 {
+	echo "Stream instance ID: $$"
 	mpv --ytdl-raw-options=force-ipv4= "$1" "$v" --input-ipc-server="$socket"
+}
+
+# Parse a folder, and set map to its contents
+# Usage: parse_folder "path"
+parse_folder ()
+{
+	unset map # Clear the map
+	declare -gA map
+	while read -r title link
+	do
+		if [[ "$link" =~ ^https://(www\.)?twitch\.tv ]]
+		then
+			# TODO Check if streamer is conline
+			echo "TODO: Setup api keys_config stuff and check if streamer is online. -> https://dev.twitch.tv/docs/api/"
+			streamer=$(basename "$link")
+		fi
+		map["$title"]="$link"
+		entry=true
+	done < "$1"
+}
+
+# List the contents of map
+# Usage: dmenu_list
+dmenu_list ()
+{
+	keys="${!map[*]}"
+	tmp=( "$keys" )
+	echo -e "${keys// /\\n}" | dmenu -l "${#tmp}"
 }
 
 main ()
 {
-	opts="hs:dv"
+	opts="hs:dvf"
+	config=false
+	main=
+	config="$HOME"/.config/stream # Where the configs and folders are kept
 
 	# Set url if needed, to do this we must parse the arguments to ensure we dont eat up an OPTARG
 	if [ "$#" -eq 1 ]
@@ -84,7 +123,10 @@ main ()
 				;;
 			v)
 				echo "Enabling video"
-				v=
+				v=--no-video
+				;;
+			f) # TODO: Make it so a user can choose perhaps?
+				main="$HOME"/.config/stream/root
 				;;
 			*)
 				usage 1
@@ -92,8 +134,49 @@ main ()
 		esac
 	done
 
-	echo "Stream instance ID: $$"
-	play "$url" # Just for now.
+	# Read input from the config, each line must be of the form: <title>" "<url/filepath>
+	mkdir -p "$config"
+	[ -n "$main" ] && touch "$main"
+	entry=false
+
+	if [ -n "$main" ]
+	then
+		parse_folder "$main"
+
+		# Find all folders in config.
+		shopt -s nullglob
+		for f in "$HOME"/.config/stream/*
+		do
+			name=$(basename "$f")
+			if [[ ! "$name" =~ ^config|^root$ ]] # Check that the file is not a config (e.g config or config_twitch) and not the root folder
+			then
+				map["Folder:$name"]="$f" # Link the folder to its file
+			fi
+		done
+	fi
+
+	if "$entry" && [ -n "$main" ]
+	then
+		if input=$(dmenu_list)
+		then
+			echo "Selected $input"
+			if [ "$(echo "$input" | cut -d: -f 1)" = Folder ]
+			then
+				# Note that we do not allow sub-folders
+				folder=$(echo "$input" | cut -d: -f 2)
+				parse_folder "$config/$folder"
+				if input=$(dmenu_list)
+				then
+					play "${map[$input]}"
+				fi
+			else
+				play "${map[$input]}" # Just a link to a video
+			fi
+		fi
+	else
+		v=--no-video
+		play "$url" # Play lofi music with no video by default
+	fi
 }
 
 main "$@"

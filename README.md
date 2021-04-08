@@ -8,6 +8,32 @@ Stream is a simple toolkit I use to make watching/ listening to streams/ videos
 To listen to/Play videos look at `stream -h`.
 To manipulate `stream` whilst its running look at `stream-helper- h`.
 
+## Folders
+
+Users can make use of optional 'folders'. A folder is essentially a file
+containing predefined links/urls/paths to videos. Folders make playing/ viewing
+the same content easier, example usage:
+* Easily watching your favorite streamer (youtube or twitch)
+	- If you have an api key for twitch then the user will only be listed if
+	  they are online
+* Create a folder for a group of videos on your disk (I use this to keep the
+  recorded lectures my lecturer posts easy to access).
+
+Folders have the following form and note that title must be unique
+```
+<title>" "<url/filepath>"
+<title>" "<url/filepath>"
+```
+The default folder is located in `$HOME/.config/stream/root`, you can edit this
+to have what ever links you want.
+
+Next if you want to create custom folders simply create
+`$HOME/.config/stream/<NAME>`, what this will do is when you run `stream -f` it
+will list all the titles that are present in root, as well as your other
+folders (written as `Folder:<NAME>`).  Selecting one of these folders will open
+and list its contents. Note folders cannot have subfolders (with the exception
+of the root folder).
+
 ## Stream-Helper Continued
 
 Stream-Helper's main goal is to make working with `stream` easier (in any
