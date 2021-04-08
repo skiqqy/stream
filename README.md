@@ -25,6 +25,9 @@ Folders have the following form and note that title must be unique
 ```
 <title>" "<url/filepath>
 <title>" "<url/filepath>
+.
+.
+.
 ```
 The default folder is located in `$HOME/.config/stream/root`, you can edit this
 to have what ever links you want.
