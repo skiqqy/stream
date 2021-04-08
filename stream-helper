@@ -240,6 +240,12 @@ main ()
 		esac
 	done
 
+	# Assert that dependencies are met
+	if ! check_deps > /dev/null
+	then
+		echo -e "Warning, you are missing some dependencies. This script may potentially break.\nPlease check $0 -d"
+	fi
+
 	if ! ss -l | grep "$socket" > /dev/null
 	then
 		echo "Socket '$socket' not found! Exiting."

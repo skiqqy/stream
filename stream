@@ -175,6 +175,12 @@ main ()
 		esac
 	done
 
+	# Assert that dependencies are met
+	if ! check_deps > /dev/null
+	then
+		echo -e "Warning, you are missing some dependencies. This script may potentially break.\nPlease check $0 -d"
+	fi
+
 	# Read input from the config, each line must be of the form: <title>" "<url/filepath>
 	mkdir -p "$config"
 	[ -n "$main" ] && touch "$main"

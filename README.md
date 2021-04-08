@@ -12,10 +12,10 @@ set a socket with `-s`.
 
 ## Dependencies
 
-Each script can be run with the `-d` flag to print the dpendencies it needs. Each
-dependency comes with a short description explaining what it is used for, and how
-necessary it is. If it returns with a 0 exit code you have all the dependencies,
-else it will show which dependencies you are missing.
+Each script can be run with the `-d` flag to print the dependencies it needs.
+Each dependency comes with a short description explaining what it is used for,
+and how necessary it is. If it returns with a 0 exit code you have all the
+dependencies, else it will show which dependencies you are missing.
 
 Example: `stream -d`
 
