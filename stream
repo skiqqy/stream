@@ -174,8 +174,7 @@ main ()
 			fi
 		fi
 	else
-		v=--no-video
-		play "$url" # Play lofi music with no video by default
+		play "$url"
 	fi
 }
 
