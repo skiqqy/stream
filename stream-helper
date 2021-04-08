@@ -53,7 +53,7 @@ print_command ()
 				echo -e "$1"': Pause/Play current stream instance.\n\t- Usage: pp [time]'
 				;;
 			svol)
-				echo -e "$1"': Adjust stream instance volume.\n\t- Usage: svol [(i|d) [amount]] [set to]'
+				echo -e "$1"': Adjust stream instance volume.\n\t- Usage: svol [(+|-) [amount]] [set to]'
 				;;
 			*)
 				echo -e "$1": Description $1 not yet implemented.
@@ -67,7 +67,7 @@ getvol () {
 }
 
 # Control/Set the volume by an (optional) amount, or by 2 if none given.
-# Usage: svol [(i|d) [amount]] [set to]
+# Usage: svol [(+|-) [amount]] [set to]
 svol ()
 {
 	if [ "$#" -eq 0 ]
