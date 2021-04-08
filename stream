@@ -8,10 +8,10 @@
 args=( $@ ) # I want splitting
 deps=( youtube-dl mpv dmenu ) # List of dependencies needed by stream
 version=beta-1.0v
-#socket=/tmp/mpvsoc
 socket=
 v=
 url='https://www.youtube.com/watch?v=5qap5aO4i9A' # By default we play lofi
+cache=15 # How much we cache (in seconds)
 
 usage ()
 {
@@ -40,8 +40,7 @@ EOF
 play ()
 {
 	echo "Stream instance ID: $$"
-	#mpv --ytdl-raw-options=force-ipv4= "$1" "$v" --input-ipc-server="$socket"
-	mpv --ytdl-raw-options=force-ipv4= "$1" "$v" "$socket"
+	mpv --ytdl-raw-options=force-ipv4= "$1" "$v" "$socket" --cache-secs="$cache"
 }
 
 # Parse a folder, and set map to its contents
@@ -118,7 +117,6 @@ main ()
 				usage 0
 				;;
 			s)
-				#socket="$OPTARG"
 				# TODO: Check that it is unique
 				echo Socket Enabled!
 				socket="--input-ipc-server=/tmp/$OPTARG"
@@ -132,7 +130,7 @@ main ()
 				exit 0
 				;;
 			v)
-				echo "Enabling video"
+				echo "Disabling video"
 				v=--no-video
 				;;
 			f) # TODO: Make it so a user can choose perhaps?
