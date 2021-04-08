@@ -20,7 +20,7 @@ options
 
 -h    Shows this message.
 -s    Specify the socket to use.
--d    See the dependencies needed for full functionality.
+-d    See the dependencies needed for full functionality (prints a message if one is missing).
 -t    Force tty mode.
 -c    List the commands and what they do.
 
@@ -56,7 +56,7 @@ print_command ()
 				echo -e "$1"': Adjust stream instance volume.\n\t- Usage: svol [(+|-) [amount]] [set to]'
 				;;
 			*)
-				echo -e "$1": Description $1 not yet implemented.
+				echo -e "$1: Description $1 not yet implemented."
 				;;
 		esac
 }
@@ -171,6 +171,43 @@ tty ()
 	fi
 }
 
+# Assert that dependecies are met. And print what they are needed for, shows a
+# warning if a dependecy is missing.
+check_deps ()
+{
+	missing=0
+
+	for d in ${deps[*]}
+	do
+		if ! command -v "$d"
+		then
+			missing=1
+			echo "[WARNING] $d is missing."
+		fi
+		# Explain what it is needed for.
+		case "$d" in
+			dmenu)
+				msg='Used to draw the gui, this is optional, if you dont have it installed you can just use tty mode.'
+				;;
+			socat)
+				msg='Used to communicate with the socket, hard dependency.'
+				;;
+			ss)
+				msg='Used to check that the socket exists and is open, semi-optional.'
+				;;
+			jq)
+				msg='Used to parse the json returned by mpv. Mandatory.'
+				;;
+			*)
+				msg='Description for this dependency not given.'
+				;;
+		esac
+		echo -e "\t- $msg"
+	done
+
+	return "$missing"
+}
+
 main ()
 {
 	# Vars
@@ -187,8 +224,8 @@ main ()
 				socket="$OPTARG"
 				;;
 			d)
-				echo "Dependencies: ${deps[*]}"
-				exit 0
+				check_deps
+				exit
 				;;
 			t)
 				tty=true

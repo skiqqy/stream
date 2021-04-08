@@ -10,6 +10,15 @@ To manipulate `stream` whilst its running look at `stream-helper -h`. Note that
 to manipulate `stream` the `-a` flag should be used when running `stream` (or
 set a socket with `-s`.
 
+## Dependencies
+
+Each script can be run with the `-d` flag to print the dpendencies it needs. Each
+dependency comes with a short description explaining what it is used for, and how
+necessary it is. If it returns with a 0 exit code you have all the dependencies,
+else it will show which dependencies you are missing.
+
+Example: `stream -d`
+
 ## Folders
 
 Users can make use of optional 'folders'. A folder is essentially a file

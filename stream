@@ -26,7 +26,7 @@ options
 -h    Shows this message.
 -s    Specify the socket to use (also enables usage of stream-helper).
 -a    Enable the usage of a socket (default /tmp/mpvsoc)
--d    See the dependencies needed for full functionality.
+-d    See the dependencies needed for full functionality (prints a message if one is missing).
 -v    Disable Video (only play audio).
 -f    Load and use the folders to select a video from dmenu.
 
@@ -69,6 +69,39 @@ dmenu_list ()
 	keys="${!map[*]}"
 	tmp=( "$keys" )
 	echo -e "${keys// /\\n}" | dmenu -l "${#tmp}"
+}
+
+# Assert that dependecies are met. And print what they are needed for, shows a
+# warning if a dependecy is missing.
+check_deps ()
+{
+	missing=0
+	for d in ${deps[*]}
+	do
+		if ! command -v "$d"
+		then
+			missing=1
+			echo "[WARNING] $d is missing."
+		fi
+		# Explain what it is needed for.
+		case "$d" in
+			youtube-dl)
+				msg='Allows for the streaming of videos from youtube, including livestreams.'
+				;;
+			mpv)
+				msg='Main video driver, without this no audio can be played/ video shown. This is a must have.'
+				;;
+			dmenu)
+				msg='Used to draw the gui, this is optional, but without it you cannot use the folder functionality.'
+				;;
+			*)
+				msg='Description for this dependency not given.'
+				;;
+		esac
+		echo -e "\t- $msg"
+	done
+
+	return "$missing"
 }
 
 main ()
@@ -126,8 +159,8 @@ main ()
 				socket='--input-ipc-server=/tmp/mpvsoc'
 				;;
 			d)
-				echo "Dependencies: ${deps[*]}"
-				exit 0
+				check_deps
+				exit
 				;;
 			v)
 				echo "Disabling video"
