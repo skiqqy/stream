@@ -6,7 +6,9 @@ Stream is a simple toolkit I use to make watching/ listening to streams/ videos
 ## Usage
 
 To listen to/Play videos look at `stream -h`.
-To manipulate `stream` whilst its running look at `stream-helper -h`.
+To manipulate `stream` whilst its running look at `stream-helper -h`. Note that
+to manipulate `stream` the `-a` flag should be used when running `stream` (or
+set a socket with `-s`.
 
 ## Folders
 

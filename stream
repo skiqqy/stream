@@ -8,7 +8,8 @@
 args=( $@ ) # I want splitting
 deps=( youtube-dl mpv dmenu ) # List of dependencies needed by stream
 version=beta-1.0v
-socket=/tmp/mpvsoc
+#socket=/tmp/mpvsoc
+socket=
 v=
 url='https://www.youtube.com/watch?v=5qap5aO4i9A' # By default we play lofi
 
@@ -23,7 +24,8 @@ options
 -------
 
 -h    Shows this message.
--s    Specify the socket to use.
+-s    Specify the socket to use (also enables usage of stream-helper).
+-a    Enable the usage of a socket (default /tmp/mpvsoc)
 -d    See the dependencies needed for full functionality.
 -v    Disable Video (only play audio).
 -f    Load and use the folders to select a video from dmenu.
@@ -38,7 +40,8 @@ EOF
 play ()
 {
 	echo "Stream instance ID: $$"
-	mpv --ytdl-raw-options=force-ipv4= "$1" "$v" --input-ipc-server="$socket"
+	#mpv --ytdl-raw-options=force-ipv4= "$1" "$v" --input-ipc-server="$socket"
+	mpv --ytdl-raw-options=force-ipv4= "$1" "$v" "$socket"
 }
 
 # Parse a folder, and set map to its contents
@@ -71,7 +74,7 @@ dmenu_list ()
 
 main ()
 {
-	opts="hs:dvf"
+	opts="hs:dvfa"
 	config=false
 	main=
 	config="$HOME"/.config/stream # Where the configs and folders are kept
@@ -115,7 +118,14 @@ main ()
 				usage 0
 				;;
 			s)
-				socket="$OPTARG"
+				#socket="$OPTARG"
+				# TODO: Check that it is unique
+				echo Socket Enabled!
+				socket="--input-ipc-server=/tmp/$OPTARG"
+				;;
+			a)
+				echo Socket Enabled!
+				socket='--input-ipc-server=/tmp/mpvsoc'
 				;;
 			d)
 				echo "Dependencies: ${deps[*]}"
